@@ -4,11 +4,11 @@ import { Modal, Button, Row, message } from 'antd';
 import { IDisconnected, IParticipantCount, ILayout, IScreenInfo, IAudioTrack, ICallStatus, IAudioStatus, IRoster } from '../type/index';
 import { ENV, SERVER, ACCOUNT, THIRD } from '../utils/config';
 import xyRTC from 'xy-rtc-sdk';
-import Video from './video';
-import Audio from './audio';
+import Video from './Video';
+import Audio from './Audio';
 import Internels from './Internels';
-import store from '../utils/store';
 import Login from './Login';
+import store from '../utils/store';
 
 import '../style/index.scss';
 
@@ -155,19 +155,19 @@ function Home() {
     })
 
     // 动态计算的显示容器信息
-    client.on("screenInfo", (e: IScreenInfo) => {
+    client.on("screen-info", (e: IScreenInfo) => {
       setScreenInfo(e);
     })
 
     // audio list数据
-    client.on("audioTrack", (e: IAudioTrack[]) => {
+    client.on("audio-track", (e: IAudioTrack[]) => {
       console.log("demo get audioTrack list: ", e);
 
       setAudioList(e);
     })
 
     // 呼叫状态
-    client.on('callStatus', (e: ICallStatus) => {
+    client.on('call-status', (e: ICallStatus) => {
       // 10518入会成功
       // 10519正在呼叫中
       // 呼叫失败，请将detail信息作为disconnected的第二个参数
@@ -219,7 +219,7 @@ function Home() {
       }
     })
 
-    client.on('sender-status', (e: any) => {
+    client.on('meeting-stats', (e: any) => {
       console.log("senders event: ", e);
 
       setSenderStatus(e);
@@ -273,6 +273,8 @@ function Home() {
           clientId,
           clientSecret
         });
+      } else {
+        result = await client.loginXYlinkAccount(user.phone, user.password);
       }
 
       if (result.code === 10104) {
@@ -426,12 +428,12 @@ function Home() {
       .map((item: ILayout, index: number) => {
         const id = item.roster.participantId;
         const mediagroupid = item.roster.mediagroupid;
-
         const streamId = (item.stream && item.stream.video && item.stream.video.id) || "";
+        const key = id + streamId + mediagroupid;
         const isRefresh = layoutLen > 1 && layoutLen === (index + 1);
 
         return (
-          <Video model={layoutModel} item={item} key={id + streamId + mediagroupid} index={index} isRefresh={isRefresh}></Video>
+          <Video model={layoutModel} item={item} key={key} index={index} videoId={key} isRefresh={isRefresh}></Video>
         )
       })
   }
