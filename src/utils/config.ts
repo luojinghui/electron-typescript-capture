@@ -5,8 +5,8 @@
  * @date  2020-01-17 12:04:01
  */
 
-export const ENV: 'PRE' | 'PRD' | 'TXDEV' = 'PRE';
-export const THIRD: boolean = false;
+export const ENV: 'PRE' | 'PRD' | 'TXDEV' = 'PRD';
+export const THIRD: boolean = true;
 
 const SERVER_MAP: any = {
 	TXDEV: {
